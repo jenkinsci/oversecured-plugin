@@ -25,34 +25,40 @@ import oversecured.android.Uploader;
 import org.jenkinsci.Symbol;
 
 public class OversecuredPlugin extends Builder implements SimpleBuildStep {
-    private String apkPath;
     private String integrationId;
+    private String branchName;
+    private String appPath;
 
     @DataBoundConstructor
-    public OversecuredPlugin(String apkPath, String integrationId) {
-        this.apkPath = apkPath;
+    public OversecuredPlugin(String integrationId, String branchName, String appPath) {
         this.integrationId = integrationId;
+        this.branchName = branchName;
+        this.appPath = appPath;
     }
     
-    public String getApkPath() {
-        return apkPath;
+    public String getAppPath() {
+        return appPath;
     }
     
     public String getIntegrationId() {
         return integrationId;
     }
+    
+    public String getBranchName() {
+        return branchName;
+    }
 
     @Override
     public void perform(Run<?, ?> run, FilePath workspace, Launcher launcher, TaskListener listener) throws InterruptedException, IOException {
-        File app = new File(getApkPath());
+        File app = new File(getAppPath());
         if(!app.exists() || !app.isFile()) {
-            throw new FileNotFoundException(apkPath);
+            throw new FileNotFoundException(appPath);
         }
-        String apiKey = run.getEnvironment(listener).get("apiKey");
+        String apiKey = run.getEnvironment(listener).get("oversecuredApiKey");
         if(Strings.isNullOrEmpty(apiKey)) {
             throw new IllegalStateException(Messages.OversecuredPlugin_DescriptorImpl_errors_missingApiKey());
         }
-        Uploader uploader = new Uploader(apiKey, integrationId);
+        Uploader uploader = new Uploader(apiKey, integrationId, branchName);
         uploader.setLogger(listener.getLogger());
         uploader.upload(app);
     }
@@ -60,13 +66,6 @@ public class OversecuredPlugin extends Builder implements SimpleBuildStep {
     @Symbol("oversecuredUpload")
     @Extension
     public static final class DescriptorImpl extends BuildStepDescriptor<Builder> {
-        public FormValidation doCheckApkPath(@QueryParameter String apkPath) {
-            if (Strings.isNullOrEmpty(apkPath)) {
-                return FormValidation.errorWithMarkup(Messages.OversecuredPlugin_DescriptorImpl_errors_missingApkPath());
-            }
-            return FormValidation.ok();
-        }
-
         public FormValidation doCheckIntegrationId(@QueryParameter String integrationId) {
             if (Strings.isNullOrEmpty(integrationId)) {
                 return FormValidation.errorWithMarkup(Messages.OversecuredPlugin_DescriptorImpl_errors_missingIntegrationId());
@@ -74,7 +73,21 @@ public class OversecuredPlugin extends Builder implements SimpleBuildStep {
             return FormValidation.ok();
         }
 
-        public FormValidation doCheckApiKey() {
+        public FormValidation doCheckBranchName(@QueryParameter String branchName) {
+            if (Strings.isNullOrEmpty(branchName)) {
+                return FormValidation.errorWithMarkup(Messages.OversecuredPlugin_DescriptorImpl_errors_missingBranchName());
+            }
+            return FormValidation.ok();
+        }
+
+        public FormValidation doCheckAppPath(@QueryParameter String appPath) {
+            if (Strings.isNullOrEmpty(appPath)) {
+                return FormValidation.errorWithMarkup(Messages.OversecuredPlugin_DescriptorImpl_errors_missingAppPath());
+            }
+            return FormValidation.ok();
+        }
+
+        public FormValidation doCheckOversecuredApiKey() {
             return FormValidation.ok(Messages.OversecuredPlugin_DescriptorImpl_apiKey());
         }
 

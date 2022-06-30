@@ -4,58 +4,24 @@
     <parent>
         <groupId>org.jenkins-ci.plugins</groupId>
         <artifactId>plugin</artifactId>
-        <version>4.12</version>
+        <version>4.41</version>
         <relativePath />
     </parent>
     <groupId>io.jenkins.plugins</groupId>
     <artifactId>oversecured</artifactId>
-    <version>1.0</version>
+    <version>1.1-SNAPSHOT</version>
     <packaging>hpi</packaging>
     <properties>
-        <jenkins.version>2.235.1</jenkins.version>
+        <jenkins.version>2.303.3</jenkins.version>
         <java.level>8</java.level>
         <gitHubRepo>jenkinsci/${project.artifactId}-plugin</gitHubRepo>
     </properties>
-    <name>Oversecured Scanner</name>
-    <description>A SAST Android vulnerability scanner. Searches for vulnerabilities in 90+ categories using Oversecured API.</description>
+
+    <name>Oversecured</name>
+    <description>Enterprise vulnerability scanner for Android and iOS apps. It offers app owners and developers the ability to secure each new version of a mobile app by integrating Oversecured into the development process.</description>
     <url>https://github.com/jenkinsci/${project.artifactId}-plugin</url>
 
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>io.jenkins.tools.bom</groupId>
-                <artifactId>bom-2.235.x</artifactId>
-                <version>16</version>
-                <scope>import</scope>
-                <type>pom</type>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
     <dependencies>
-        <dependency>
-            <groupId>org.jenkins-ci.plugins</groupId>
-            <artifactId>structs</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.jenkins-ci.plugins.workflow</groupId>
-            <artifactId>workflow-cps</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.jenkins-ci.plugins.workflow</groupId>
-            <artifactId>workflow-job</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.jenkins-ci.plugins.workflow</groupId>
-            <artifactId>workflow-basic-steps</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.jenkins-ci.plugins.workflow</groupId>
-            <artifactId>workflow-durable-task-step</artifactId>
-            <scope>test</scope>
-        </dependency>
         <dependency>
             <groupId>com.squareup.retrofit2</groupId>
             <artifactId>retrofit</artifactId>
@@ -86,7 +52,7 @@
         <connection>scm:git:git://github.com/${gitHubRepo}.git</connection>
         <developerConnection>scm:git:git@github.com:${gitHubRepo}.git</developerConnection>
         <url>https://github.com/${gitHubRepo}</url>
-        <tag>oversecured-1.0</tag>
+        <tag>oversecured-1.1</tag>
     </scm>
 
     <repositories>

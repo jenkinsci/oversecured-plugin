@@ -11,7 +11,7 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class NetworkModule {
-    private static final String BASE_URL = "https://api.oversecured.com/";
+    private static final String BASE_URL = "https://api.oversecured.com";
 
     public static OversecuredService getService(String accessToken) {
         Retrofit retrofit = new Retrofit.Builder().client(getClient(accessToken)).baseUrl(BASE_URL)

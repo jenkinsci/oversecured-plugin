@@ -16,22 +16,28 @@ import oversecured.android.network.model.AppSignResponse;
 import retrofit2.Response;
 
 public class Uploader {
-    private static final String PLATFORM = "android";
     private static final MediaType APP_CONTENT_TYPE = MediaType.parse("application/octet-stream");
-    
+
+    private static final String PLATFORM_ANDROID = "android";
+    private static final String PLATFORM_IOS = "ios";
+
     private OversecuredService service;
     private String integrationId;
+    private String branchName;
     private PrintStream logger;
     
-    public Uploader(String accessToken, String integrationId) {
+    public Uploader(String accessToken, String integrationId, String branchName) {
         service = NetworkModule.getService(accessToken);
         this.integrationId = integrationId;
+        this.branchName = branchName;
     }
 
     public void upload(File target) throws IOException {
-        log("oversecured: starting version upload");
+        log("oversecured: file upload");
 
-        Response<AppSignResponse> appSignResp = service.getSignedLink(new AppSignRequest(PLATFORM, target.getName()))
+        String fileName = target.getName();
+        String platform = getPlatform(fileName);
+        Response<AppSignResponse> appSignResp = service.getSignedLink(new AppSignRequest(platform, fileName))
                 .execute();
         if (appSignResp.code() != 200) {
             throw requestErr("Signed URL", appSignResp);
@@ -46,13 +52,24 @@ public class Uploader {
         }
 
         AddVersionRequest addVersion = new AddVersionRequest(target.getName(), signInfo.getBucketKey());
-        Response<Void> addVersionResp = service.scanVersion(integrationId, addVersion).execute();
+        Response<Void> addVersionResp = service.scanVersion(integrationId, branchName, addVersion).execute();
         if (addVersionResp.code() != 200) {
             throw requestErr("Scan Version", addVersionResp);
         }
         log("oversecured: success");
     }
-    
+
+    private String getPlatform(String fileName) throws IOException {
+        String lowercasedName = fileName.toLowerCase();
+        if (lowercasedName.endsWith(".apk") || lowercasedName.endsWith(".aab")) {
+            return PLATFORM_ANDROID;
+        }
+        if (lowercasedName.endsWith(".zip")) {
+            return PLATFORM_IOS;
+        }
+        throw new IOException("App file '" + fileName + "' has invalid extension. Only '.apk', '.aab' and `.zip` are allowed");
+    }
+
     public void setLogger(PrintStream logger) {
         this.logger = logger;
     }
